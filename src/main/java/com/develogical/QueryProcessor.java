@@ -33,6 +33,18 @@ public class QueryProcessor {
             return NAME;
         }
 
+        if (processedQuery.contains("prime")) {
+            List<Integer> primes = new ArrayList<>();
+        Pattern pattern = Pattern.compile("\\d+");
+        Matcher matcher = pattern.matcher(query);
+        while (matcher.find()) {
+            int number = Integer.parseInt(matcher.group());
+            if (isPrime(number)) {
+                primes.add(number);
+                }
+            }
+            return primes.toString();
+        }
 
 
         String[] parts = processedQuery.split("[^0-9]+");
@@ -80,4 +92,15 @@ public class QueryProcessor {
         return "extra";
     }
 
+private static boolean isPrime(int number) {
+        if (number <= 1) {
+            return false;
+        }
+        for (int i = 2; i <= Math.sqrt(number); i++) {
+            if (number % i == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
