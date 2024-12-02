@@ -1,5 +1,11 @@
 package com.develogical;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class QueryProcessor {
 
     public static final String SHAKESPEARE_RESPONSE = "William Shakespeare (26 April 1564 - 23 April 1616) was an " +
@@ -27,38 +33,48 @@ public class QueryProcessor {
             return NAME;
         }
 
-        // Split the string by spaces and punctuation to isolate numbers 
-        String[] parts = processedQuery.split("[^0-9]+"); int largest = Integer.MIN_VALUE; 
-        // Initialize with the smallest possible value
-        // Loop through the parts to find numbers and determine the largest
-        for (String part : parts) { if (!part.isEmpty()) { 
-            // Ignore empty strings
-            int number = Integer.parseInt(part);
-             if (number > largest) { largest = number; 
-            } 
-        } 
-        return String.valueOf(largest);
-    }
 
-        parts = processedQuery.split("[^0-9]+");
-        largest = Integer.MIN_VALUE; 
+
+        String[] parts = processedQuery.split("[^0-9]+");
+        int largest = Integer.MIN_VALUE; 
         // Initialize with the smallest possible value
         // Loop through the parts to find numbers and determine the largest
-        for (String part : parts) { if (!part.isEmpty()) { 
+        for (String part : parts) { 
+            if (!part.isEmpty()) { 
             // Ignore empty strings
             int number = Integer.parseInt(part); 
             if (number > largest) { largest = number; } 
         } 
     }
+        if(processedQuery.contains("minus")) {
+            Pattern pattern = Pattern.compile("What is (\\d+) minus (\\d+)\\?");
+            Matcher matcher = pattern.matcher(processedQuery);
+            if (matcher.find()) {
+                int num1 = Integer.parseInt(matcher.group(1));
+                int num2 = Integer.parseInt(matcher.group(2));
+                return String.valueOf(num1 - num2);
+            }
+        }
+
+        if(processedQuery.contains("multiplied")) {
+            Pattern pattern = Pattern.compile("(\\d+)\\s*multiplied by\\s*(\\d+)");
+            Matcher matcher = pattern.matcher(processedQuery);
+            if (matcher.find()) {
+                int num1 = Integer.parseInt(matcher.group(1));
+                int num2 = Integer.parseInt(matcher.group(2));
+            return String.valueOf(num1 * num2);
+        }
+        }
 
 
         if (processedQuery.startsWith("which of the following numbers is the largest")) {
-            String[] splitString = processedQuery.split(" ");
-            int a = Integer.parseInt(splitString[splitString.length - 1]);
-            int b = Integer.parseInt(splitString[splitString.length - 2]);
-            String temp = splitString[splitString.length - 3].split("?")[0];
-            int c = Integer.parseInt(temp);
-            return String.valueOf( Math.max(a, Math.max(b, c)));             
+            List<Integer> numbers = new ArrayList<>();
+            Pattern pattern = Pattern.compile("\\d+");
+            Matcher matcher = pattern.matcher(processedQuery);
+            while (matcher.find()) {
+                numbers.add(Integer.parseInt(matcher.group()));
+            }
+            return String.valueOf(Collections.max(numbers));        
         }
 
         return "extra";
